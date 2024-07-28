@@ -10,6 +10,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Menu, X } from 'lucide-react';
+import { useSimContext } from '@/app/contexts/simContext';
+import { getAllSims } from '@/app/api/simApi';
 
 interface SidebarProps {
   isFixed: boolean;
@@ -19,6 +21,7 @@ interface SidebarProps {
 function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState<boolean>(isFixed);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const { setSims } = useSimContext();
 
   useEffect(() => {
     setIsExpanded(isFixed);
@@ -40,6 +43,17 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
     if (!isFixed) {
       setIsHovered(false);
       setIsExpanded(false);
+    }
+  };
+
+  const handleGetAllSims = async () => {
+    try {
+      const simsData = await getAllSims();
+      console.log('++++ SIMs:', simsData[0]);
+
+      setSims(simsData);
+    } catch (error) {
+      console.error('Error fetching SIMs:', error);
     }
   };
 
@@ -112,6 +126,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
                   <Link
                     href='/sim-management/get-all-sims'
                     className='block hover:bg-gray-300 p-2 rounded ml-4'
+                    onClick={handleGetAllSims}
                   >
                     Get all SIMs
                   </Link>

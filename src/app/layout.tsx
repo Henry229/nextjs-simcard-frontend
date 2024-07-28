@@ -3,8 +3,15 @@ import { Open_Sans } from 'next/font/google';
 import Navbar from '@/components/navbar';
 import './globals.css';
 import ClientLayout from '@/components/clientLayout';
+import { Metadata } from 'next';
+import { SimProvider } from './contexts/simContext';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'SIM Management App',
+  description: 'Manage your SIM cards efficiently',
+};
 
 export default function RootLayout({
   children,
@@ -14,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang='en' className={openSans.className}>
       <body>
-        <Navbar />
-        <ClientLayout>{children}</ClientLayout>
+        <SimProvider>
+          <Navbar />
+          <ClientLayout>{children}</ClientLayout>
+        </SimProvider>
       </body>
     </html>
   );
