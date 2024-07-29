@@ -130,6 +130,12 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
                   >
                     Get all SIMs
                   </Link>
+                  <Link
+                    href='/sim-management/devices'
+                    className='block hover:bg-gray-200 p-2 rounded'
+                  >
+                    Get Devices
+                  </Link>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
