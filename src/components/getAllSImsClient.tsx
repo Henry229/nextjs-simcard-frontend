@@ -26,7 +26,7 @@ const GetAllSimsClient: React.FC = () => {
               <tr key={sim.iccid}>
                 <td className='border px-4 py-2'>{sim.iccid}</td>
                 <td className='border px-4 py-2'>
-                  {'jasper_status' in sim ? sim.jasper_status : 'N/A'}
+                  {'status' in sim ? sim.status : 'N/A'}
                 </td>
                 {/* 필요한 다른 데이터 추가 */}
               </tr>

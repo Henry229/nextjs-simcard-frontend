@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface Sim {
   iccid: string;
-  jasper_status: string;
+  status: string;
   // 필요한 다른 필드들 추가
 }
 
