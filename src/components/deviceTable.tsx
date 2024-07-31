@@ -11,8 +11,8 @@ type Device = {
   id: string;
   iccid: string;
   status: string;
-  ratePlan: string;
-  communicationPlan: string;
+  rate_plan: string;
+  communication_plan: string;
   gps: boolean;
 };
 
@@ -79,9 +79,9 @@ export default function DeviceTable() {
           <tr key={device.id}>
             <td className='px-6 py-4 whitespace-nowrap'>{device.iccid}</td>
             <td className='px-6 py-4 whitespace-nowrap'>{device.status}</td>
-            <td className='px-6 py-4 whitespace-nowrap'>{device.ratePlan}</td>
+            <td className='px-6 py-4 whitespace-nowrap'>{device.rate_plan}</td>
             <td className='px-6 py-4 whitespace-nowrap'>
-              {device.communicationPlan}
+              {device.communication_plan}
             </td>
             <td className='px-6 py-4 whitespace-nowrap'>
               {device.gps ? 'Yes' : 'No'}
