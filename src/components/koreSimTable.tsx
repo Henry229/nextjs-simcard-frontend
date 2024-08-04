@@ -2,8 +2,13 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSimContext } from '@/app/contexts/simContext';
-import { getAllKoreDevices, changeKoreDeviceStatus } from '@/app/api/koreApi';
+import {
+  getAllKoreDevices,
+  changeKoreDeviceStatus,
+  searchKoreDeviceByIccid,
+} from '@/app/api/koreApi';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -12,6 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const ACCOUNT_ID = 'cmp-pp-org-4611';
 
@@ -21,16 +33,28 @@ interface KoreDevice {
   state: string;
 }
 
-interface KoreSimTableProps {
-  searchResult: KoreDevice | null;
-}
+const STATES = [
+  'Stock',
+  'Active',
+  'Suspend',
+  'Suspend With Charge',
+  'Deactivated',
+  'Pending Scrap',
+  'Scrapped',
+  'Barred',
+];
 
-export default function KoreSimTable({ searchResult }: KoreSimTableProps) {
+export default function KoreSimTable() {
   const { koreDevices, setKoreDevices } = useSimContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filteredDevices, setFilteredDevices] = useState<KoreDevice[]>([]);
+  const [selectedState, setSelectedState] = useState<string>('all');
+  const [searchIccid, setSearchIccid] = useState('');
+  const [searchResult, setSearchResult] = useState<KoreDevice | null>(null);
 
   const fetchKoreDevices = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await getAllKoreDevices();
       setKoreDevices(response.simCards);
@@ -43,76 +67,139 @@ export default function KoreSimTable({ searchResult }: KoreSimTableProps) {
   }, [setKoreDevices]);
 
   useEffect(() => {
-    if (!searchResult) {
-      fetchKoreDevices();
-    } else {
-      setLoading(false);
+    fetchKoreDevices();
+  }, [fetchKoreDevices]);
+
+  useEffect(() => {
+    let result = koreDevices;
+    if (selectedState !== 'all') {
+      result = result.filter((device) => device.state === selectedState);
     }
-  }, [searchResult, fetchKoreDevices]);
+    if (searchResult) {
+      result = [searchResult];
+    }
+    setFilteredDevices(result);
+  }, [koreDevices, selectedState, searchResult]);
 
   const handleStatusChange = async (
     subscriptionId: string,
-    newStatus: 'ACTIVATED' | 'DEACTIVATED'
+    newStatus: 'Active' | 'Deactivated'
   ) => {
     try {
       await changeKoreDeviceStatus(subscriptionId, newStatus);
-      // Refresh the device list after status change
-      if (!searchResult) {
-        fetchKoreDevices();
-      }
+      fetchKoreDevices();
     } catch (err) {
       console.error('Error changing device status:', err);
       setError('Failed to change device status');
     }
   };
 
+  const handleStateChange = (value: string) => {
+    setSelectedState(value);
+    setSearchResult(null);
+    setSearchIccid('');
+  };
+
+  const handleSearch = async () => {
+    if (!searchIccid.trim()) {
+      setError('Please enter an ICCID to search');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await searchKoreDeviceByIccid(searchIccid);
+      if (response.simCards && response.simCards.length > 0) {
+        setSearchResult(response.simCards[0]);
+        setError(null);
+      } else {
+        setSearchResult(null);
+        setError('No device found with the given ICCID');
+      }
+    } catch (err) {
+      console.error('Error searching KORE device:', err);
+      setError('Failed to search for the device');
+      setSearchResult(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchIccid('');
+    setSearchResult(null);
+    setError(null);
+  };
+
   if (loading) return <div>Loading KORE devices...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  const devicesToDisplay = searchResult ? [searchResult] : koreDevices;
-
-  if (!devicesToDisplay || devicesToDisplay.length === 0)
-    return <div>No KORE devices found.</div>;
-
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ICCID</TableHead>
-          <TableHead>Subscription ID</TableHead>
-          <TableHead>State</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {devicesToDisplay.map((device: KoreDevice) => (
-          <TableRow key={device.subscription_id}>
-            <TableCell>{device.iccid}</TableCell>
-            <TableCell>{device.subscription_id}</TableCell>
-            <TableCell>{device.state}</TableCell>
-            <TableCell>
-              <Button
-                className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
-                onClick={() =>
-                  handleStatusChange(device.subscription_id, 'ACTIVATED')
-                }
-                disabled={device.state === 'ACTIVATED'}
-              >
-                Activate
-              </Button>
-              <Button
-                className='bg-rose-600 text-white hover:bg-rose-900'
-                onClick={() =>
-                  handleStatusChange(device.subscription_id, 'DEACTIVATED')
-                }
-                disabled={device.state === 'DEACTIVATED'}
-              >
-                Deactivate
-              </Button>
-            </TableCell>
+    <div>
+      <div className='flex mb-4 gap-2'>
+        <Input
+          type='text'
+          placeholder='Search by ICCID'
+          value={searchIccid}
+          onChange={(e) => setSearchIccid(e.target.value)}
+          className='flex-grow'
+        />
+        <Button onClick={handleSearch}>Search</Button>
+        {searchResult && <Button onClick={clearSearch}>Clear Search</Button>}
+      </div>
+
+      <Select onValueChange={handleStateChange} value={selectedState}>
+        <SelectTrigger className='w-[180px] mb-4'>
+          <SelectValue placeholder='Filter by state' />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value='all'>All States</SelectItem>
+          {STATES.map((state) => (
+            <SelectItem key={state} value={state}>
+              {state}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ICCID</TableHead>
+            <TableHead>Subscription ID</TableHead>
+            <TableHead>State</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {filteredDevices.map((device: KoreDevice) => (
+            <TableRow key={device.subscription_id}>
+              <TableCell>{device.iccid}</TableCell>
+              <TableCell>{device.subscription_id}</TableCell>
+              <TableCell>{device.state}</TableCell>
+              <TableCell>
+                <Button
+                  className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
+                  onClick={() =>
+                    handleStatusChange(device.subscription_id, 'Active')
+                  }
+                  disabled={device.state === 'Active'}
+                >
+                  Activate
+                </Button>
+                <Button
+                  className='bg-rose-600 text-white hover:bg-rose-900'
+                  onClick={() =>
+                    handleStatusChange(device.subscription_id, 'Deactivated')
+                  }
+                  disabled={device.state === 'Deactivated'}
+                >
+                  Deactivate
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
