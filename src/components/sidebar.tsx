@@ -12,6 +12,7 @@ import {
 import { Menu, X } from 'lucide-react';
 import { useSimContext } from '@/app/contexts/simContext';
 import { getAllSims } from '@/app/api/simApi';
+import { getAllKoreDevices } from '@/app/api/koreApi';
 
 interface SidebarProps {
   isFixed: boolean;
@@ -21,7 +22,7 @@ interface SidebarProps {
 function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState<boolean>(isFixed);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const { setSims } = useSimContext();
+  const { setSims, setKoreDevices } = useSimContext();
 
   useEffect(() => {
     setIsExpanded(isFixed);
@@ -54,6 +55,15 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
       setSims(simsData);
     } catch (error) {
       console.error('Error fetching SIMs:', error);
+    }
+  };
+
+  const handleGetKoreDevices = async () => {
+    try {
+      const koreDevicesData = await getAllKoreDevices();
+      setKoreDevices(koreDevicesData);
+    } catch (error) {
+      console.error('Error fetching KORE devices:', error);
     }
   };
 
@@ -132,9 +142,16 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
                   </Link>
                   <Link
                     href='/sim-management/devices'
-                    className='block hover:bg-gray-200 p-2 rounded'
+                    className='block hover:bg-gray-200 p-2 rounded ml-4'
                   >
                     Get Devices
+                  </Link>
+                  <Link
+                    href='/sim-management/kore-devices'
+                    className='block hover:bg-gray-300 p-2 rounded ml-4'
+                    onClick={handleGetKoreDevices}
+                  >
+                    Get KORE Devices
                   </Link>
                 </AccordionContent>
               </AccordionItem>

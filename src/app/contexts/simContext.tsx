@@ -8,9 +8,18 @@ interface Sim {
   // 필요한 다른 필드들 추가
 }
 
+interface KoreDevice {
+  iccid: string;
+  subscription_id: string;
+  state: string;
+  // Add other fields as needed
+}
+
 interface SimContextType {
   sims: Sim[];
   setSims: React.Dispatch<React.SetStateAction<Sim[]>>;
+  koreDevices: KoreDevice[];
+  setKoreDevices: React.Dispatch<React.SetStateAction<KoreDevice[]>>;
 }
 
 const SimContext = createContext<SimContextType | undefined>(undefined);
@@ -19,9 +28,10 @@ export const SimProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [sims, setSims] = useState<Sim[]>([]);
+  const [koreDevices, setKoreDevices] = useState<KoreDevice[]>([]);
 
   return (
-    <SimContext.Provider value={{ sims, setSims }}>
+    <SimContext.Provider value={{ sims, setSims, koreDevices, setKoreDevices }}>
       {children}
     </SimContext.Provider>
   );
