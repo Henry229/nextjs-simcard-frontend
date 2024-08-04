@@ -11,9 +11,9 @@ type Device = {
   id: string;
   iccid: string;
   status: string;
-  ratePlan: string;
-  communicationPlan: string;
-  gps: boolean;
+  rate_plan: string;
+  communication_plan: string;
+  providers: string;
 };
 
 export default function DeviceTable() {
@@ -70,7 +70,7 @@ export default function DeviceTable() {
             Communication Plan
           </th>
           <th className='px-6 py-3 border-b-2 border-gray-300 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider'>
-            GPS
+            Providers
           </th>
         </tr>
       </thead>
@@ -79,13 +79,11 @@ export default function DeviceTable() {
           <tr key={device.id}>
             <td className='px-6 py-4 whitespace-nowrap'>{device.iccid}</td>
             <td className='px-6 py-4 whitespace-nowrap'>{device.status}</td>
-            <td className='px-6 py-4 whitespace-nowrap'>{device.ratePlan}</td>
+            <td className='px-6 py-4 whitespace-nowrap'>{device.rate_plan}</td>
             <td className='px-6 py-4 whitespace-nowrap'>
-              {device.communicationPlan}
+              {device.communication_plan}
             </td>
-            <td className='px-6 py-4 whitespace-nowrap'>
-              {device.gps ? 'Yes' : 'No'}
-            </td>
+            <td className='px-6 py-4 whitespace-nowrap'>{device.providers}</td>
             <td>
               <Button
                 className='bg-indigo-800 text-white hover:bg-indigo-950'
