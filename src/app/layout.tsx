@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en' className={openSans.className}>
-      <body>
+      <body suppressHydrationWarning={true}>
         <SimProvider>
           <Navbar />
           <ClientLayout>{children}</ClientLayout>
@@ -29,3 +29,11 @@ export default function RootLayout({
     </html>
   );
 }
+
+// // 원치 않는 속성 제거
+// export function generateHtml(html: string) {
+//   return html.replace(
+//     /(?:data-new-gr-c-s-check-loaded|data-gr-ext-installed|cz-shortcut-listen)="[^"]*"/g,
+//     ''
+//   );
+// }

@@ -144,7 +144,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
                     href='/sim-management/devices'
                     className='block hover:bg-gray-200 p-2 rounded ml-4'
                   >
-                    Get Devices
+                    Get Jasper Devices
                   </Link>
                   <Link
                     href='/sim-management/kore-devices'

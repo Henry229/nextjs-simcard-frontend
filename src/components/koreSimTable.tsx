@@ -48,7 +48,7 @@ export default function KoreSimTable() {
   const { koreDevices, setKoreDevices } = useSimContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filteredDevices, setFilteredDevices] = useState<KoreDevice[]>([]);
+  const [filteredDevices, setFilteredDevices] = useState<KoreDevice[]>([]); // Initialize with empty array
   const [selectedState, setSelectedState] = useState<string>('all');
   const [searchIccid, setSearchIccid] = useState('');
   const [searchResult, setSearchResult] = useState<KoreDevice | null>(null);
@@ -71,6 +71,10 @@ export default function KoreSimTable() {
   }, [fetchKoreDevices]);
 
   useEffect(() => {
+    // console.log('koreDevices:', koreDevices);
+    // console.log('selectedState:', selectedState);
+    // console.log('searchResult:', searchResult);
+
     let result = koreDevices;
     if (selectedState !== 'all') {
       result = result.filter((device) => device.state === selectedState);
@@ -78,6 +82,7 @@ export default function KoreSimTable() {
     if (searchResult) {
       result = [searchResult];
     }
+    // console.log('Filtered result:', result);
     setFilteredDevices(result);
   }, [koreDevices, selectedState, searchResult]);
 
@@ -133,6 +138,8 @@ export default function KoreSimTable() {
   if (loading) return <div>Loading KORE devices...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  // console.log('filteredDevices before rendering:', filteredDevices);
+
   return (
     <div>
       <div className='flex mb-4 gap-2'>
@@ -171,33 +178,39 @@ export default function KoreSimTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredDevices.map((device: KoreDevice) => (
-            <TableRow key={device.subscription_id}>
-              <TableCell>{device.iccid}</TableCell>
-              <TableCell>{device.subscription_id}</TableCell>
-              <TableCell>{device.state}</TableCell>
-              <TableCell>
-                <Button
-                  className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
-                  onClick={() =>
-                    handleStatusChange(device.subscription_id, 'Active')
-                  }
-                  disabled={device.state === 'Active'}
-                >
-                  Activate
-                </Button>
-                <Button
-                  className='bg-rose-600 text-white hover:bg-rose-900'
-                  onClick={() =>
-                    handleStatusChange(device.subscription_id, 'Deactivated')
-                  }
-                  disabled={device.state === 'Deactivated'}
-                >
-                  Deactivate
-                </Button>
-              </TableCell>
+          {Array.isArray(filteredDevices) && filteredDevices.length > 0 ? (
+            filteredDevices.map((device: KoreDevice) => (
+              <TableRow key={device.subscription_id}>
+                <TableCell>{device.iccid}</TableCell>
+                <TableCell>{device.subscription_id}</TableCell>
+                <TableCell>{device.state}</TableCell>
+                <TableCell>
+                  <Button
+                    className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
+                    onClick={() =>
+                      handleStatusChange(device.subscription_id, 'Active')
+                    }
+                    disabled={device.state === 'Active'}
+                  >
+                    Activate
+                  </Button>
+                  <Button
+                    className='bg-rose-600 text-white hover:bg-rose-900'
+                    onClick={() =>
+                      handleStatusChange(device.subscription_id, 'Deactivated')
+                    }
+                    disabled={device.state === 'Deactivated'}
+                  >
+                    Deactivate
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={4}>No devices found</TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>
