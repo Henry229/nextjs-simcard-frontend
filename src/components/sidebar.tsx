@@ -78,7 +78,12 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
     >
       <div className='flex items-center justify-between p-4'>
         <Link href='/' className='flex items-center space-x-2'>
-          <Image src='/logo.png' alt='NETSIM Logo' width={40} height={40} />
+          <Image
+            src='/Netsim-logo.svg'
+            alt='NETSIM Logo'
+            width={60}
+            height={60}
+          />
           <span
             className={`text-xl font-bold ${
               isExpanded ? 'opacity-100' : 'opacity-0'
