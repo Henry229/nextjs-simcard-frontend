@@ -1,9 +1,27 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import Modal from './modal';
+import LoginModal from './loginModal';
+import SignUpModal from './signUpModal';
 
 export default function Navbar() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginModalOpen(true);
+    setIsSignUpModalOpen(false);
+  };
+
+  const openSignUpModal = () => {
+    setIsSignUpModalOpen(true);
+    setIsLoginModalOpen(false);
+  };
+
   return (
     <nav className='flex items-center justify-between p-4 bg-white shadow-md'>
       <div className='flex items-center space-x-2'>
@@ -18,13 +36,29 @@ export default function Navbar() {
         </Link>
       </div>
       <div className='space-x-2'>
-        <Button variant='outline' asChild>
-          <Link href='/login'>Login</Link>
+        <Button variant='outline' onClick={openLoginModal}>
+          Login
         </Button>
-        <Button asChild>
-          <Link href='/signUp'>SignUp</Link>
-        </Button>
+        <Button onClick={openSignUpModal}>Sign Up</Button>
       </div>
+      <Modal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      >
+        <LoginModal
+          onClose={() => setIsLoginModalOpen(false)}
+          onSignUpClick={openSignUpModal}
+        />
+      </Modal>
+      <Modal
+        isOpen={isSignUpModalOpen}
+        onClose={() => setIsSignUpModalOpen(false)}
+      >
+        <SignUpModal
+          onClose={() => setIsSignUpModalOpen(false)}
+          onLoginClick={openLoginModal}
+        />
+      </Modal>
     </nav>
   );
 }

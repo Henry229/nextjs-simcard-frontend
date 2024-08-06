@@ -5,6 +5,7 @@ import './globals.css';
 import ClientLayout from '@/components/clientLayout';
 import { Metadata } from 'next';
 import { SimProvider } from './contexts/simContext';
+import { SessionProvider } from 'next-auth/react';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
@@ -21,19 +22,13 @@ export default function RootLayout({
   return (
     <html lang='en' className={openSans.className}>
       <body suppressHydrationWarning={true}>
-        <SimProvider>
-          <Navbar />
-          <ClientLayout>{children}</ClientLayout>
-        </SimProvider>
+        <SessionProvider>
+          <SimProvider>
+            <Navbar />
+            <ClientLayout>{children}</ClientLayout>
+          </SimProvider>
+        </SessionProvider>
       </body>
     </html>
   );
 }
-
-// // 원치 않는 속성 제거
-// export function generateHtml(html: string) {
-//   return html.replace(
-//     /(?:data-new-gr-c-s-check-loaded|data-gr-ext-installed|cz-shortcut-listen)="[^"]*"/g,
-//     ''
-//   );
-// }

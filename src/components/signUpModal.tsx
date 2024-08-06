@@ -1,14 +1,15 @@
-'use client';
-
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-const SignUpModal: React.FC = () => {
+interface SignUpModalProps {
+  onClose: () => void;
+  onLoginClick: () => void;
+}
+
+const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +23,8 @@ const SignUpModal: React.FC = () => {
       });
 
       if (res.ok) {
-        router.push('/login'); // Redirect to login page after successful signup
+        onClose();
+        // Optionally, show a success message or automatically log the user in
       } else {
         const data = await res.json();
         setError(data.message || 'An error occurred during signup');
@@ -34,57 +36,65 @@ const SignUpModal: React.FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-      <div className='px-8 py-6 mt-4 text-left bg-white shadow-lg'>
-        <h3 className='text-2xl font-bold text-center'>Create a new account</h3>
-        <form onSubmit={handleSubmit}>
-          <div className='mt-4'>
-            <div>
-              <label className='block' htmlFor='name'>
-                Name
-              </label>
-              <input
-                type='text'
-                placeholder='Name'
-                className='w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className='mt-4'>
-              <label className='block' htmlFor='email'>
-                Email
-              </label>
-              <input
-                type='email'
-                placeholder='Email'
-                className='w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className='mt-4'>
-              <label className='block'>Password</label>
-              <input
-                type='password'
-                placeholder='Password'
-                className='w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className='flex items-baseline justify-between'>
-              <button className='px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900'>
-                Sign Up
-              </button>
-            </div>
-          </div>
-        </form>
-        {error && <p className='text-red-500 text-xs italic mt-4'>{error}</p>}
-      </div>
+    <div className='w-full'>
+      <h2 className='text-2xl font-bold mb-4'>Create a new account</h2>
+      <form onSubmit={handleSubmit}>
+        <div className='mb-4'>
+          <label
+            htmlFor='name'
+            className='block text-sm font-medium text-gray-700'
+          >
+            Enter your name
+          </label>
+          <input
+            type='text'
+            id='name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            required
+          />
+        </div>
+        <div className='mb-4'>
+          <label
+            htmlFor='email'
+            className='block text-sm font-medium text-gray-700'
+          >
+            Email address
+          </label>
+          <input
+            type='email'
+            id='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            required
+          />
+        </div>
+        <div className='mb-4'>
+          <label
+            htmlFor='password'
+            className='block text-sm font-medium text-gray-700'
+          >
+            Password
+          </label>
+          <input
+            type='password'
+            id='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            required
+          />
+        </div>
+        <button
+          type='submit'
+          className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+        >
+          Sign up
+        </button>
+      </form>
+      {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
     </div>
   );
 };

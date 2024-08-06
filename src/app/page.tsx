@@ -21,12 +21,12 @@ export default function HomePage() {
 
   return (
     <div className='min-h-screen bg-gray-200 flex items-center justify-center'>
-      <LoginPopup onLogin={handleLogin} />
-      {isLoggingIn && (
+      {/* <LoginPopup onLogin={handleLogin} /> */}
+      {/* {isLoggingIn && (
         <div className='fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center'>
           <div className='text-white text-2xl'>Logging in...</div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

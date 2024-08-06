@@ -4,9 +4,15 @@ import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-const LoginModal: React.FC = () => {
+interface LoginModalProps {
+  onClose: () => void;
+  onSignUpClick: () => void;
+}
+
+const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -17,12 +23,13 @@ const LoginModal: React.FC = () => {
         email,
         password,
         redirect: false,
+        callbackUrl: '/dashboard',
       });
 
       if (res?.error) {
         setError('Invalid credentials');
-      } else {
-        router.push('/dashboard'); // Redirect to dashboard after successful login
+      } else if (res?.url) {
+        router.push(res.url);
       }
     } catch (error) {
       console.error(error);
@@ -31,46 +38,85 @@ const LoginModal: React.FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-      <div className='px-8 py-6 mt-4 text-left bg-white shadow-lg'>
-        <h3 className='text-2xl font-bold text-center mb-2'>Sign in</h3>
-        <div className='border-b-2 border-gray-400' />
-        <form onSubmit={handleSubmit}>
-          <div className='mt-4'>
-            <div>
-              <label className='block' htmlFor='email'>
-                Email
-              </label>
-              <input
-                type='text'
-                placeholder='Email'
-                className='w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className='mt-4'>
-              <label className='block'>Password</label>
-              <input
-                type='password'
-                placeholder='Password'
-                className='w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className='flex items-baseline justify-between'>
-              <button className='px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900'>
-                Login
-              </button>
-              <a href='#' className='text-sm text-blue-600 hover:underline'>
-                Forgot password?
-              </a>
-            </div>
+    <div className='w-full'>
+      <h2 className='text-2xl font-bold mb-4'>Sign in to your account</h2>
+      <form onSubmit={handleSubmit}>
+        <div className='mb-4'>
+          <label
+            htmlFor='email'
+            className='block text-sm font-medium text-gray-700'
+          >
+            Email address
+          </label>
+          <input
+            type='email'
+            id='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            required
+          />
+        </div>
+        <div className='mb-4'>
+          <label
+            htmlFor='password'
+            className='block text-sm font-medium text-gray-700'
+          >
+            Password
+          </label>
+          <input
+            type='password'
+            id='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            required
+          />
+        </div>
+        <div className='flex items-center justify-between mb-4'>
+          <div className='flex items-center'>
+            <input
+              id='remember-me'
+              name='remember-me'
+              type='checkbox'
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
+            />
+            <label
+              htmlFor='remember-me'
+              className='ml-2 block text-sm text-gray-900'
+            >
+              Remember me
+            </label>
           </div>
-        </form>
-        {error && <p className='text-red-500 text-xs italic'>{error}</p>}
-      </div>
+          <div className='text-sm'>
+            <a
+              href='#'
+              className='font-medium text-indigo-600 hover:text-indigo-500'
+            >
+              Forgot your password?
+            </a>
+          </div>
+        </div>
+        <button
+          type='submit'
+          className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+        >
+          Sign in
+        </button>
+      </form>
+      {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
+      <p className='mt-4 text-center text-sm text-gray-600'>
+        Don&apos;t have an account?{' '}
+        <a
+          href='#'
+          onClick={onSignUpClick}
+          className='font-medium text-indigo-600 hover:text-indigo-500'
+        >
+          Sign up
+        </a>
+      </p>
     </div>
   );
 };
