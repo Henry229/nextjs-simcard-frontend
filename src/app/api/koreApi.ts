@@ -50,3 +50,13 @@ export const searchKoreDeviceByIccid = async (iccid: string) => {
     throw error;
   }
 };
+
+export const getKoreStatusCounts = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/kore/status-counts`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching KORE status counts:', error);
+    throw error;
+  }
+};
