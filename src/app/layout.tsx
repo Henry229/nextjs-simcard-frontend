@@ -5,7 +5,7 @@ import './globals.css';
 import ClientLayout from '@/components/clientLayout';
 import { Metadata } from 'next';
 import { SimProvider } from './contexts/simContext';
-import { SessionProvider } from 'next-auth/react';
+import AuthProvider from '@/components/authProvider';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
@@ -22,12 +22,12 @@ export default function RootLayout({
   return (
     <html lang='en' className={openSans.className}>
       <body suppressHydrationWarning={true}>
-        <SessionProvider>
+        <AuthProvider>
           <SimProvider>
             <Navbar />
             <ClientLayout>{children}</ClientLayout>
           </SimProvider>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

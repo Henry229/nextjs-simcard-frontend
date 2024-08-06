@@ -1,6 +1,28 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import type { NextAuthOptions } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
+
+// Extend the built-in session types
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      accessToken?: string;
+      refreshToken?: string;
+    };
+  }
+}
+
+// Extend the built-in token types
+declare module 'next-auth/jwt' {
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -28,7 +50,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }): Promise<JWT> {
       if (account && user) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
