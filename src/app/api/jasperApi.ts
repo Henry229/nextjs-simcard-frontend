@@ -44,3 +44,15 @@ export const searchJasperDeviceByIccid = async (iccid: string) => {
     throw error;
   }
 };
+
+export const getJasperStatusCounts = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/jasper/status-counts`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Jasper status counts:', error);
+    throw error;
+  }
+};
