@@ -55,7 +55,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
         <div>
           <label
             htmlFor='name'
-            className='block text-sm font-medium text-gray-700'
+            className='block text-sm font-medium text-gray-700 mb-2'
           >
             Name
           </label>
@@ -70,7 +70,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
         <div>
           <label
             htmlFor='email'
-            className='block text-sm font-medium text-gray-700'
+            className='block text-sm font-medium text-gray-700 mb-2'
           >
             Email address
           </label>
@@ -85,7 +85,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
         <div>
           <label
             htmlFor='password'
-            className='block text-sm font-medium text-gray-700'
+            className='block text-sm font-medium text-gray-700 mb-2'
           >
             Password
           </label>
