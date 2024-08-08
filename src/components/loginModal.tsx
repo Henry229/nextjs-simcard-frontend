@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import ForgotPasswordModal from './forgotPasswordModal';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -14,6 +18,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,43 +42,59 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
     }
   };
 
+  const handleSignUpLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    onSignUpClick();
+  };
+
+  const handleForgotPasswordClick = (
+    e: React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    e.preventDefault();
+    setShowForgotPassword(true);
+  };
+
+  if (showForgotPassword) {
+    return <ForgotPasswordModal onClose={() => setShowForgotPassword(false)} />;
+  }
+
   return (
-    <div className='w-full'>
-      <h2 className='text-2xl font-bold mb-4'>Sign in to your account</h2>
-      <form onSubmit={handleSubmit}>
-        <div className='mb-4'>
+    <div className='w-full max-w-md bg-white p-8 rounded-lg shadow-md'>
+      <h2 className='text-2xl font-bold mb-6 text-center'>
+        Sign in to your account
+      </h2>
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        <div>
           <label
             htmlFor='email'
             className='block text-sm font-medium text-gray-700'
           >
             Email address
           </label>
-          <input
+          <Input
             type='email'
             id='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
             required
           />
         </div>
-        <div className='mb-4'>
+        <div>
           <label
             htmlFor='password'
             className='block text-sm font-medium text-gray-700'
           >
             Password
           </label>
-          <input
+          <Input
             type='password'
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
             required
           />
         </div>
-        <div className='flex items-center justify-between mb-4'>
+        <div className='flex items-center justify-between'>
           <div className='flex items-center'>
             <input
               id='remember-me'
@@ -93,29 +114,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
           <div className='text-sm'>
             <a
               href='#'
+              onClick={handleForgotPasswordClick}
               className='font-medium text-indigo-600 hover:text-indigo-500'
             >
               Forgot your password?
             </a>
           </div>
         </div>
-        <button
-          type='submit'
-          className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-        >
+        <Button type='submit' className='w-full'>
           Sign in
-        </button>
+        </Button>
       </form>
       {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
       <p className='mt-4 text-center text-sm text-gray-600'>
         Don&apos;t have an account?{' '}
-        <a
-          href='#'
-          onClick={onSignUpClick}
+        <Link
+          href='/signup'
+          onClick={handleSignUpLinkClick}
           className='font-medium text-indigo-600 hover:text-indigo-500'
         >
           Sign up
-        </a>
+        </Link>
       </p>
     </div>
   );

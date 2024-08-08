@@ -1,4 +1,10 @@
+'use client';
+
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { signUp } from '@/app/api/authApi';
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -10,91 +16,102 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+    setError('');
+    setSuccessMessage('');
 
-      if (res.ok) {
+    try {
+      const data = await signUp(name, email, password);
+      setSuccessMessage(
+        data.message || 'Sign up successful! You can now log in.'
+      );
+      setTimeout(() => {
         onClose();
-        // Optionally, show a success message or automatically log the user in
-      } else {
-        const data = await res.json();
-        setError(data.message || 'An error occurred during signup');
-      }
+        onLoginClick();
+      }, 3000);
     } catch (error) {
-      console.error(error);
-      setError('An unexpected error occurred');
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     }
   };
 
+  const handleLoginLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault(); // Prevent the default link behavior
+    onLoginClick(); // Call the provided onLoginClick function
+  };
+
   return (
-    <div className='w-full'>
-      <h2 className='text-2xl font-bold mb-4'>Create a new account</h2>
-      <form onSubmit={handleSubmit}>
-        <div className='mb-4'>
+    <div className='w-full max-w-md bg-white p-8 rounded-lg shadow-md'>
+      <h2 className='text-2xl font-bold mb-6 text-center'>
+        Create a new account
+      </h2>
+      <form onSubmit={handleSubmit} className='space-y-4'>
+        <div>
           <label
             htmlFor='name'
             className='block text-sm font-medium text-gray-700'
           >
-            Enter your name
+            Name
           </label>
-          <input
+          <Input
             type='text'
             id='name'
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
             required
           />
         </div>
-        <div className='mb-4'>
+        <div>
           <label
             htmlFor='email'
             className='block text-sm font-medium text-gray-700'
           >
             Email address
           </label>
-          <input
+          <Input
             type='email'
             id='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
             required
           />
         </div>
-        <div className='mb-4'>
+        <div>
           <label
             htmlFor='password'
             className='block text-sm font-medium text-gray-700'
           >
             Password
           </label>
-          <input
+          <Input
             type='password'
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
             required
           />
         </div>
-        <button
-          type='submit'
-          className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-        >
+        <Button type='submit' className='w-full'>
           Sign up
-        </button>
+        </Button>
       </form>
       {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
+      <p className='mt-4 text-center text-sm text-gray-600'>
+        Already have an account?{' '}
+        <Link
+          href='#'
+          className='font-medium text-indigo-600 hover:text-indigo-500'
+          onClick={handleLoginLinkClick}
+        >
+          Log in
+        </Link>
+      </p>
     </div>
   );
 };
