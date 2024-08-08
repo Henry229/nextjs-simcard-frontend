@@ -88,7 +88,7 @@ export default function KoreSimTable() {
 
   const handleStatusChange = async (
     subscriptionId: string,
-    newStatus: 'Active' | 'Deactivated'
+    newStatus: 'active' | 'deactivated'
   ) => {
     try {
       await changeKoreDeviceStatus(subscriptionId, newStatus);
@@ -188,7 +188,7 @@ export default function KoreSimTable() {
                   <Button
                     className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
                     onClick={() =>
-                      handleStatusChange(device.subscription_id, 'Active')
+                      handleStatusChange(device.subscription_id, 'active')
                     }
                     disabled={device.state === 'Active'}
                   >
@@ -197,7 +197,7 @@ export default function KoreSimTable() {
                   <Button
                     className='bg-rose-600 text-white hover:bg-rose-900'
                     onClick={() =>
-                      handleStatusChange(device.subscription_id, 'Deactivated')
+                      handleStatusChange(device.subscription_id, 'deactivated')
                     }
                     disabled={device.state === 'Deactivated'}
                   >
