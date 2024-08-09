@@ -19,3 +19,20 @@ export const signUp = async (name: string, email: string, password: string) => {
     throw new Error('An unexpected error occurred');
   }
 };
+
+export const signIn = async (email: string, password: string) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/signin`, {
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(
+        error.response.data.error || 'An error occurred during login'
+      );
+    }
+    throw new Error('An unexpected error occurred');
+  }
+};
