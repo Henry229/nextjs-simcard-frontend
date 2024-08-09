@@ -67,7 +67,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
         <div>
           <label
             htmlFor='email'
-            className='block text-sm font-medium text-gray-700'
+            className='block text-sm font-medium text-gray-700 mb-2'
           >
             Email address
           </label>
@@ -82,7 +82,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
         <div>
           <label
             htmlFor='password'
-            className='block text-sm font-medium text-gray-700'
+            className='block text-sm font-medium text-gray-700 mb-2'
           >
             Password
           </label>

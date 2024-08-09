@@ -31,6 +31,7 @@ export default function Navbar() {
             alt='NETSIM Logo'
             width={60}
             height={60}
+            priority
           />
           <span className='text-xl font-bold'>NETSIM</span>
         </Link>
