@@ -1,30 +1,14 @@
 import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import prisma from '@/lib/prisma';
 import type { NextAuthOptions } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
+import axios from 'axios';
 
-// Extend the built-in session types
-declare module 'next-auth' {
-  interface Session {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      accessToken?: string;
-      refreshToken?: string;
-    };
-  }
-}
-
-// Extend the built-in token types
-declare module 'next-auth/jwt' {
-  interface JWT {
-    accessToken?: string;
-    refreshToken?: string;
-  }
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -33,33 +17,43 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // Here you would typically check the user credentials against your database
-        // This is just a placeholder example
-        if (
-          credentials?.email === 'user@example.com' &&
-          credentials?.password === 'password'
-        ) {
-          return { id: '1', name: 'User', email: 'user@example.com' };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
-        return null;
+        try {
+          const response = await axios.post(`${API_BASE_URL}/api/auth/signin`, {
+            email: credentials.email,
+            password: credentials.password,
+          });
+
+          const { user } = response.data;
+
+          if (user) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error('Authentication error:', error);
+          return null;
+        }
       },
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: 'database',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account }): Promise<JWT> {
-      if (account && user) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
+    async session({ session, user }) {
+      // 세션에 사용자 ID 추가
+      if (session?.user) {
+        session.user = user;
+        // session.user.id = user.id;
       }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      session.user.refreshToken = token.refreshToken;
       return session;
     },
   },
