@@ -24,9 +24,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
 
   useEffect(() => {
     if (status === 'authenticated') {
+      onClose();
       router.replace('/dashboard');
     }
-  }, [status, router]);
+  }, [status, onClose, router]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -38,6 +39,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
       const res = await signIn('credentials', {
         email,
@@ -45,9 +47,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
         redirect: false,
         // callbackUrl: '/dashboard',
       });
-
       if (res?.error) {
-        setError(`Invalid credentials ${res.error}`);
+        setError(res.error);
       } else if (res?.url) {
         router.push(res.url);
       }

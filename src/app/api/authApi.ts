@@ -30,7 +30,7 @@ export const signIn = async (email: string, password: string) => {
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(
-        error.response.data.error || 'An error occurred during login'
+        error.response?.data?.message || 'An error occurred during login'
       );
     }
     throw new Error('An unexpected error occurred');

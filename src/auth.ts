@@ -1,7 +1,8 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import axios from 'axios';
+// import axios from 'axios';
 import type { NextAuthOptions } from 'next-auth';
+import { signIn } from '@/app/api/authApi';
 
 // 사용자 정의 User 타입 선언
 declare module 'next-auth' {
@@ -23,33 +24,39 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        // console.log('Authorize function called', credentials);
+        // console.log('Request object:', req);
+
         if (!credentials?.email || !credentials?.password) {
+          console.log('Email or password missing');
           throw new Error('Email and password are required');
           // return null;
         }
         try {
-          const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`,
-            {
-              email: credentials.email,
-              password: credentials.password,
-            }
-          );
-          return res.data;
+          const user = await signIn(credentials.email, credentials.password);
+          return user;
+          // const res = await axios.post(
+          //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`,
+          //   {
+          //     email: credentials.email,
+          //     password: credentials.password,
+          //   }
+          // );
+          // return res.data;
         } catch (error) {
-          console.error('Authentication error:', error);
-          if (axios.isAxiosError(error)) {
-            throw new Error(
-              error.response?.data?.message || 'Failed to authenticate'
-            );
-          }
-          throw new Error('An unexpected error occurred');
-          // return null;
+          // if (axios.isAxiosError(error)) {
+          //   throw new Error(
+          //     error.response?.data?.message || 'Failed to authenticate'
+          //   );
+          // }
+          // throw error;
+          throw new Error('Authentication failed');
         }
       },
     }),
   ],
+  // debug: true, // 디버그 모드 활성화
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -66,6 +73,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/login',
+    error: '/auth/error', // 커스텀 에러
   },
 };
 
