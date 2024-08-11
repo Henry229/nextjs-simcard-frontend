@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import Modal from './modal';
@@ -34,17 +33,14 @@ export default function Navbar() {
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
   };
+
   return (
     <nav className='flex items-center justify-between p-4 bg-white shadow-md'>
       <div className='flex items-center space-x-2'>
         <Link href='/' className='flex items-center space-x-2'>
-          <Image
-            src='/Netsim-logo.svg'
-            alt='NETSIM Logo'
-            width={60}
-            height={60}
-            priority
-          />
+          <svg width='60' height='60'>
+            <use href='/Netsim-logo.svg#logo' />
+          </svg>
           <span className='text-xl font-bold'>NETSIM</span>
         </Link>
       </div>
@@ -52,18 +48,23 @@ export default function Navbar() {
         {session ? (
           <div className='flex items-center space-x-4'>
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage
-                    src={session.user?.image || ''}
-                    alt={session.user?.name || ''}
-                  />
-                  <AvatarFallback>
-                    {session.user?.name?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='ghost'
+                  className='relative h-8 w-8 rounded-full'
+                >
+                  <Avatar>
+                    <AvatarImage
+                      src={session.user?.image || ''}
+                      alt={session.user?.name || ''}
+                    />
+                    <AvatarFallback>
+                      {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align='end'>
                 <DropdownMenuItem>
                   <Link href='/profile'>Profile</Link>
                 </DropdownMenuItem>
