@@ -55,11 +55,11 @@ export default function Navbar() {
               <DropdownMenuTrigger>
                 <Avatar>
                   <AvatarImage
-                    src={session.user.image || ''}
-                    alt={session.user.name || ''}
+                    src={session.user?.image || ''}
+                    alt={session.user?.name || ''}
                   />
                   <AvatarFallback>
-                    {session.user.name?.charAt(0).toUpperCase() || 'U'}
+                    {session.user?.name?.charAt(0).toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
