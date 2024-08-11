@@ -25,7 +25,8 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error('Email and password are required');
+          // return null;
         }
         try {
           const res = await axios.post(
@@ -37,7 +38,14 @@ export const authOptions: NextAuthOptions = {
           );
           return res.data;
         } catch (error) {
-          return null;
+          console.error('Authentication error:', error);
+          if (axios.isAxiosError(error)) {
+            throw new Error(
+              error.response?.data?.message || 'Failed to authenticate'
+            );
+          }
+          throw new Error('An unexpected error occurred');
+          // return null;
         }
       },
     }),

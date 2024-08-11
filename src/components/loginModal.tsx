@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -20,12 +20,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const [error, setError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const router = useRouter();
-  const session = useSession();
+  const { data: session, status } = useSession();
 
-  if (session) {
-    router.replace('/dashboard');
-    return null;
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.replace('/dashboard');
+    }
+  }, [status, router]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
   }
+  // if (session) {
+  //   router.replace('/dashboard');
+  //   return null;
+  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +43,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
         email,
         password,
         redirect: false,
-        callbackUrl: '/dashboard',
+        // callbackUrl: '/dashboard',
       });
 
       if (res?.error) {
-        setError('Invalid credentials');
+        setError(`Invalid credentials ${res.error}`);
       } else if (res?.url) {
         router.push(res.url);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Login error', error);
       setError('An unexpected error occurred');
     }
   };
