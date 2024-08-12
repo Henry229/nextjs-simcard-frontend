@@ -25,8 +25,8 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        // console.log('Authorize function called', credentials);
-        // console.log('Request object:', req);
+        console.log('**** Authorize function called', credentials);
+        console.log('**** Request object:', req);
 
         if (!credentials?.email || !credentials?.password) {
           console.log('Email or password missing');
@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
         }
         try {
           const user = await signIn(credentials.email, credentials.password);
+          console.log('@@@@ User:', user);
           return user;
           // const res = await axios.post(
           //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`,
@@ -51,7 +52,9 @@ export const authOptions: NextAuthOptions = {
           //   );
           // }
           // throw error;
-          throw new Error('Authentication failed');
+          throw new Error(
+            'Authentication failed : Eamil or password is incorrect'
+          );
         }
       },
     }),

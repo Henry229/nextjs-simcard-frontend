@@ -83,6 +83,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
             alt='NETSIM Logo'
             width={60}
             height={60}
+            priority
           />
           <span
             className={`text-xl font-bold ${

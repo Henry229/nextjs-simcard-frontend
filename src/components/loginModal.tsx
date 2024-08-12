@@ -40,6 +40,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    console.log('>>>> Email:', email);
+    console.log('>>>> password:', password);
     try {
       const res = await signIn('credentials', {
         email,

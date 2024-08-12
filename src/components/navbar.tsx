@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import Modal from './modal';
@@ -38,9 +39,13 @@ export default function Navbar() {
     <nav className='flex items-center justify-between p-4 bg-white shadow-md'>
       <div className='flex items-center space-x-2'>
         <Link href='/' className='flex items-center space-x-2'>
-          <svg width='60' height='60'>
-            <use href='/Netsim-logo.svg#logo' />
-          </svg>
+          <Image
+            src='/Netsim-logo.svg'
+            alt='NETSIM Logo'
+            width={60}
+            height={60}
+            priority
+          />
           <span className='text-xl font-bold'>NETSIM</span>
         </Link>
       </div>
