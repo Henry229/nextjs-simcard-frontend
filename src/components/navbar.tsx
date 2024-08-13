@@ -40,10 +40,10 @@ export default function Navbar() {
       <div className='flex items-center space-x-2'>
         <Link href='/' className='flex items-center space-x-2'>
           <Image
-            src='/Netsim-logo.svg'
+            src='/NETSIM.svg'
             alt='NETSIM Logo'
-            width={60}
-            height={60}
+            width={30}
+            height={30}
             priority
           />
           <span className='text-xl font-bold'>NETSIM</span>

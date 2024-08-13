@@ -10,6 +10,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Menu, X } from 'lucide-react';
+import { AiOutlineDashboard } from 'react-icons/ai';
+import { FiAlertTriangle } from 'react-icons/fi';
+import { FaRegUser } from 'react-icons/fa';
+import { BsCreditCard } from 'react-icons/bs';
+
 import { useSimContext } from '@/app/contexts/simContext';
 import { getAllSims } from '@/app/api/simApi';
 import { getAllKoreDevices } from '@/app/api/koreApi';
@@ -79,10 +84,10 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
       <div className='flex items-center justify-between p-4'>
         <Link href='/' className='flex items-center space-x-2'>
           <Image
-            src='/Netsim-logo.svg'
+            src='/NETSIM.svg'
             alt='NETSIM Logo'
-            width={60}
-            height={60}
+            width={30}
+            height={30}
             priority
           />
           <span
@@ -111,24 +116,27 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
           <li>
             <Link
               href='/dashboard'
-              className='block hover:bg-gray-200 p-2 rounded'
+              className='flex hover:bg-gray-300 p-2 rounded items-center'
             >
+              <AiOutlineDashboard className='mr-2' />
               Dashboard
             </Link>
           </li>
           <li>
             <Link
               href='/alerts'
-              className='block hover:bg-gray-200 p-2 rounded'
+              className='flex hover:bg-gray-200 p-2 rounded items-center'
             >
+              <FiAlertTriangle className='mr-2' />
               Alert
             </Link>
           </li>
           <li>
             <Link
               href='/customer'
-              className='block hover:bg-gray-200 p-2 rounded'
+              className='flex hover:bg-gray-200 p-2 rounded items-center'
             >
+              <FaRegUser className='mr-2' />
               Customer
             </Link>
           </li>
@@ -136,6 +144,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
             <Accordion type='single' collapsible>
               <AccordionItem value='sim-management'>
                 <AccordionTrigger className='hover:bg-gray-200 p-2 rounded'>
+                  <BsCreditCard />
                   SIM Management
                 </AccordionTrigger>
                 <AccordionContent>
