@@ -58,12 +58,11 @@ export default function KoreSimTable() {
     try {
       const response = await getAllKoreDevices();
       setKoreDevices(response.simCards);
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching KORE devices:', err);
       setError('Failed to fetch KORE devices');
-      setLoading(false);
     }
+    setLoading(false);
   }, [setKoreDevices]);
 
   useEffect(() => {

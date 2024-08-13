@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getDevices } from '@/app/api/simCardAPi';
 import {
+  getAllJasper,
   changeJasperStatus,
   searchJasperDeviceByIccid,
 } from '@/app/api/jasperApi';
@@ -26,12 +26,19 @@ import {
 } from '@/components/ui/select';
 
 interface JasperDevice {
-  id: string;
   iccid: string;
   status: string;
-  rate_plan: string;
-  communication_plan: string;
-  providers: string;
+  imei: string | null;
+  msisdn: string | null;
+  modemId: string | null;
+  ratePlan: string | null;
+  communicationPlan: string | null;
+  companyId: number | null;
+  companyName: string | null;
+  trackerId: string | null;
+  customer: string | null;
+  dateUpdated: string | null;
+  ctdDataUsage: number | null;
 }
 
 const STATUS = [
@@ -66,15 +73,24 @@ export default function DeviceTable() {
     if (searchResult) {
       result = [searchResult];
     }
+    console.log('++++ Filtered Devices:', result);
     setFilteredDevices(result);
   }, [jasperDevices, selectedState, searchResult]);
 
   const fetchDevices = async () => {
     try {
-      const fetchedDevices = await getDevices();
-      setJasperDevices(fetchedDevices);
+      const fetchedDevices = await getAllJasper();
+      console.log('++++ Jasper Devices:', fetchedDevices);
+      if (Array.isArray(fetchedDevices.simCards)) {
+        setJasperDevices(fetchedDevices.simCards);
+        setFilteredDevices(fetchedDevices.simCards);
+      } else {
+        console.error('Error fetching devices:', fetchedDevices);
+        setError('Error fetching devices');
+      }
       setLoading(false);
     } catch (err) {
+      console.error('Error fetching devices:', err);
       setError('Error fetching devices in deviceTable');
       setLoading(false);
     }
@@ -110,9 +126,11 @@ export default function DeviceTable() {
       const response = await searchJasperDeviceByIccid(searchIccid);
       if (response.simCards && response.simCards.length > 0) {
         setSearchResult(response.simCards[0]);
+        setFilteredDevices([response.simCards[0]]);
         setError(null);
       } else {
         setSearchResult(null);
+        setFilteredDevices([]);
         setError('No device found with the given ICCID');
       }
     } catch (err) {
@@ -122,6 +140,7 @@ export default function DeviceTable() {
       );
       setError('Error searching device by ICCID in deviceTable');
       setSearchResult(null);
+      setFilteredDevices([]);
     } finally {
       setLoading(false);
     }
@@ -131,6 +150,7 @@ export default function DeviceTable() {
     setSearchIccid('');
     setSearchResult(null);
     setError(null);
+    setFilteredDevices(jasperDevices);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -167,38 +187,50 @@ export default function DeviceTable() {
           <TableRow>
             <TableCell>ICCID</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>IMEI</TableCell>
+            <TableCell>MSISDN</TableCell>
             <TableCell>Rate Plan</TableCell>
             <TableCell>Communication Plan</TableCell>
-            <TableCell>Providers</TableCell>
+            <TableCell>CUSTOMER</TableCell>
+            <TableCell>CTDDATAUSAGE</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredDevices.map((device: JasperDevice) => (
-            <TableRow key={device.id}>
-              <TableCell>{device.iccid}</TableCell>
-              <TableCell>{device.status}</TableCell>
-              <TableCell>{device.rate_plan}</TableCell>
-              <TableCell>{device.communication_plan}</TableCell>
-              <TableCell>{device.providers}</TableCell>
-              <TableCell>
-                <Button
-                  className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
-                  onClick={() => changeStatus(device.iccid, 'ACTIVATED')}
-                  disabled={device.status === 'ACTIVATED'}
-                >
-                  Activate
-                </Button>
-                <Button
-                  className='bg-rose-600 text-white hover:bg-rose-900'
-                  onClick={() => changeStatus(device.iccid, 'DEACTIVATED')}
-                  disabled={device.status === 'DEACTIVATED'}
-                >
-                  Deactivate
-                </Button>
-              </TableCell>
+          {Array.isArray(filteredDevices) && filteredDevices.length > 0 ? (
+            filteredDevices.map((device: JasperDevice) => (
+              <TableRow key={device.iccid}>
+                <TableCell>{device.iccid}</TableCell>
+                <TableCell>{device.status}</TableCell>
+                <TableCell>{device.imei}</TableCell>
+                <TableCell>{device.status}</TableCell>
+                <TableCell>{device.ratePlan}</TableCell>
+                <TableCell>{device.communicationPlan}</TableCell>
+                <TableCell>{device.customer}</TableCell>
+                <TableCell>{device.ctdDataUsage}</TableCell>
+                <TableCell>
+                  <Button
+                    className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
+                    onClick={() => changeStatus(device.iccid, 'ACTIVATED')}
+                    disabled={device.status === 'ACTIVATED'}
+                  >
+                    Activate
+                  </Button>
+                  <Button
+                    className='bg-rose-600 text-white hover:bg-rose-900'
+                    onClick={() => changeStatus(device.iccid, 'DEACTIVATED')}
+                    disabled={device.status === 'DEACTIVATED'}
+                  >
+                    Deactivate
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6}>No devices found</TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

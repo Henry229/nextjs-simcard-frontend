@@ -16,6 +16,16 @@ interface ChangeStatusResponse {
   message: string;
 }
 
+export const getAllJasper = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/jasper/devices`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching SIMs:', error);
+    throw error;
+  }
+};
+
 export const changeJasperStatus = async (
   iccid: string,
   newStatus: JasperStatus
