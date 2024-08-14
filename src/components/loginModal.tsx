@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ForgotPasswordModal from './forgotPasswordModal';
+import { useTheme } from 'next-themes';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -21,6 +22,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -77,7 +79,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   }
 
   return (
-    <div className='w-full max-w-md bg-white p-8 rounded-lg shadow-md'>
+    <div
+      className={`w-full max-w-md bg-white p-8 rounded-lg ${
+        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'
+      } shadow-md`}
+    >
       <h2 className='text-2xl font-bold mb-6 text-center'>
         Sign in to your account
       </h2>

@@ -21,9 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en' className={openSans.className}>
-      <body suppressHydrationWarning={true}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+    <html lang='en' suppressHydrationWarning>
+      <body className={openSans.className}>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>
             <SimProvider>
               <Navbar />

@@ -16,11 +16,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from './theme-toggle';
+import { useTheme } from 'next-themes';
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const { theme } = useTheme();
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true);
@@ -37,7 +39,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='flex items-center justify-between p-4 bg-white shadow-md'>
+    <nav
+      className={`flex items-center justify-between p-4 ${
+        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'
+      } shadow-md`}
+    >
       <div className='flex items-center space-x-2'>
         <Link href='/' className='flex items-center space-x-2'>
           <Image
@@ -50,7 +56,8 @@ export default function Navbar() {
           <span className='text-xl font-bold'>NETSIM</span>
         </Link>
       </div>
-      <div className='space-x-2'>
+      <div className='flex items-center space-x-2'>
+        {/* <div className='space-x-2'> */}
         {session ? (
           <div className='flex items-center space-x-4'>
             <DropdownMenu>

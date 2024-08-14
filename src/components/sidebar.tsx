@@ -18,6 +18,7 @@ import { BsCreditCard } from 'react-icons/bs';
 import { useSimContext } from '@/app/contexts/simContext';
 import { getAllSims } from '@/app/api/simApi';
 import { getAllKoreDevices } from '@/app/api/koreApi';
+import { useTheme } from 'next-themes';
 
 interface SidebarProps {
   isFixed: boolean;
@@ -28,6 +29,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState<boolean>(isFixed);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const { setSims, setKoreDevices } = useSimContext();
+  const { theme } = useTheme();
 
   useEffect(() => {
     setIsExpanded(isFixed);
@@ -76,7 +78,10 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
     <aside
       className={`
         ${isExpanded ? 'w-64 opacity-95' : 'w-16 opacity-5'}
-        bg-gray-100 h-full fixed left-0 top-0 transition-all duration-300 ease-in-out z-50
+        ${
+          theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'
+        }
+        h-full fixed left-0 top-0 transition-all duration-300 ease-in-out z-50
       `}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
