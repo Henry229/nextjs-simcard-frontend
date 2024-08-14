@@ -27,10 +27,19 @@ import {
 
 const ACCOUNT_ID = 'cmp-pp-org-4611';
 
-interface KoreDevice {
+interface KoreDevicesResponse {
+  simCards: KoreSimTableDevice[];
+}
+
+interface KoreSimTableDevice {
   iccid: string;
   subscription_id: string;
   state: string;
+  msisdn: string;
+  imsi: string;
+  data_usage?: number;
+  sms_usage?: number;
+  voice_usage?: number;
 }
 
 const STATES = [
@@ -48,16 +57,20 @@ export default function KoreSimTable() {
   const { koreDevices, setKoreDevices } = useSimContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filteredDevices, setFilteredDevices] = useState<KoreDevice[]>([]); // Initialize with empty array
+  const [filteredDevices, setFilteredDevices] = useState<KoreSimTableDevice[]>(
+    []
+  ); // Initialize with empty array
   const [selectedState, setSelectedState] = useState<string>('all');
   const [searchIccid, setSearchIccid] = useState('');
-  const [searchResult, setSearchResult] = useState<KoreDevice | null>(null);
+  const [searchResult, setSearchResult] = useState<KoreSimTableDevice | null>(
+    null
+  );
 
   const fetchKoreDevices = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getAllKoreDevices();
-      setKoreDevices(response.simCards);
+      setKoreDevices(response);
     } catch (err) {
       console.error('Error fetching KORE devices:', err);
       setError('Failed to fetch KORE devices');
@@ -70,13 +83,26 @@ export default function KoreSimTable() {
   }, [fetchKoreDevices]);
 
   useEffect(() => {
-    // console.log('koreDevices:', koreDevices);
-    // console.log('selectedState:', selectedState);
-    // console.log('searchResult:', searchResult);
+    console.log('koreDevices:', koreDevices);
+    console.log('selectedState:', selectedState);
+    console.log('searchResult:', searchResult);
 
-    let result = koreDevices;
+    if (!koreDevices || !Array.isArray(koreDevices.simCards)) {
+      console.error('koreDevices.simCards is not an array:', koreDevices);
+      setFilteredDevices([]);
+      return;
+    }
+    // if (!koreDevices || !Array.isArray(koreDevices.simCards)) {
+    //   console.error('koreDevices.simCards is not an array:', koreDevices);
+    //   setFilteredDevices([]);
+    //   return;
+    // }
+
+    let result = koreDevices.simCards;
     if (selectedState !== 'all') {
-      result = result.filter((device) => device.state === selectedState);
+      result = result.filter(
+        (device: KoreSimTableDevice) => device.state === selectedState
+      );
     }
     if (searchResult) {
       result = [searchResult];
@@ -173,16 +199,22 @@ export default function KoreSimTable() {
             <TableHead>ICCID</TableHead>
             <TableHead>Subscription ID</TableHead>
             <TableHead>State</TableHead>
+            <TableHead>MSISDN</TableHead>
+            <TableHead>IMSI</TableHead>
+            <TableHead>DATA-USAGE</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Array.isArray(filteredDevices) && filteredDevices.length > 0 ? (
-            filteredDevices.map((device: KoreDevice) => (
+            filteredDevices.map((device: KoreSimTableDevice) => (
               <TableRow key={device.subscription_id}>
                 <TableCell>{device.iccid}</TableCell>
                 <TableCell>{device.subscription_id}</TableCell>
                 <TableCell>{device.state}</TableCell>
+                <TableCell>{device.msisdn}</TableCell>
+                <TableCell>{device.imsi}</TableCell>
+                <TableCell>{device.data_usage}</TableCell>
                 <TableCell>
                   <Button
                     className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
