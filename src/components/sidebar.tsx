@@ -18,7 +18,6 @@ import { BsCreditCard } from 'react-icons/bs';
 import { useSimContext } from '@/app/contexts/simContext';
 import { getAllSims } from '@/app/api/simApi';
 import { getAllKoreDevices } from '@/app/api/koreApi';
-import { useTheme } from 'next-themes';
 
 interface SidebarProps {
   isFixed: boolean;
@@ -29,7 +28,6 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState<boolean>(isFixed);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const { setSims, setKoreDevices } = useSimContext();
-  const { theme } = useTheme();
 
   useEffect(() => {
     setIsExpanded(isFixed);
@@ -58,7 +56,6 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
     try {
       const simsData = await getAllSims();
       console.log('++++ SIMs:', simsData[0]);
-
       setSims(simsData);
     } catch (error) {
       console.error('Error fetching SIMs:', error);
@@ -78,9 +75,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
     <aside
       className={`
         ${isExpanded ? 'w-64 opacity-95' : 'w-16 opacity-5'}
-        ${
-          theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'
-        }
+        bg-background text-foreground
         h-full fixed left-0 top-0 transition-all duration-300 ease-in-out z-50
       `}
       onMouseEnter={handleMouseEnter}
@@ -121,7 +116,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
           <li>
             <Link
               href='/dashboard'
-              className='flex hover:bg-gray-300 p-2 rounded items-center'
+              className='flex hover:bg-accent hover:text-accent-foreground p-2 rounded items-center'
             >
               <AiOutlineDashboard className='mr-2' />
               Dashboard
@@ -130,7 +125,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
           <li>
             <Link
               href='/alerts'
-              className='flex hover:bg-gray-200 p-2 rounded items-center'
+              className='flex hover:bg-accent hover:text-accent-foreground p-2 rounded items-center'
             >
               <FiAlertTriangle className='mr-2' />
               Alert
@@ -139,7 +134,7 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
           <li>
             <Link
               href='/customer'
-              className='flex hover:bg-gray-200 p-2 rounded items-center'
+              className='flex hover:bg-accent hover:text-accent-foreground p-2 rounded items-center'
             >
               <FaRegUser className='mr-2' />
               Customer
@@ -148,27 +143,27 @@ function Sidebar({ isFixed, setIsFixed }: SidebarProps): JSX.Element {
           <li>
             <Accordion type='single' collapsible>
               <AccordionItem value='sim-management'>
-                <AccordionTrigger className='hover:bg-gray-200 p-2 rounded'>
+                <AccordionTrigger className='hover:bg-accent hover:text-accent-foreground p-2 rounded'>
                   <BsCreditCard />
                   SIM Management
                 </AccordionTrigger>
                 <AccordionContent>
                   <Link
                     href='/sim-management/get-all-sims'
-                    className='block hover:bg-gray-300 p-2 rounded ml-4'
+                    className='block hover:bg-accent hover:text-accent-foreground p-2 rounded ml-4'
                     onClick={handleGetAllSims}
                   >
                     Get all SIMs
                   </Link>
                   <Link
                     href='/sim-management/devices'
-                    className='block hover:bg-gray-200 p-2 rounded ml-4'
+                    className='block hover:bg-accent hover:text-accent-foreground p-2 rounded ml-4'
                   >
                     Get Jasper Devices
                   </Link>
                   <Link
                     href='/sim-management/kore-devices'
-                    className='block hover:bg-gray-300 p-2 rounded ml-4'
+                    className='block hover:bg-accent hover:text-accent-foreground p-2 rounded ml-4'
                     onClick={handleGetKoreDevices}
                   >
                     Get KORE Devices

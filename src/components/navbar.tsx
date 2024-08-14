@@ -17,6 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from './theme-toggle';
 import { useTheme } from 'next-themes';
+import { Users } from 'lucide-react';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -37,13 +38,10 @@ export default function Navbar() {
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/' });
   };
+  const isAdmin = session?.user?.role === 'admin';
 
   return (
-    <nav
-      className={`flex items-center justify-between p-4 ${
-        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'
-      } shadow-md`}
-    >
+    <nav className='flex items-center justify-between p-4 bg-background text-foreground shadow-md'>
       <div className='flex items-center space-x-2'>
         <Link href='/' className='flex items-center space-x-2'>
           <Image

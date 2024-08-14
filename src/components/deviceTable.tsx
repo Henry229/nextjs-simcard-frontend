@@ -195,24 +195,26 @@ export default function DeviceTable() {
         </SelectContent>
       </Select>
       <Table>
-        <TableHeader>
+        <TableHeader className='bg-gray-800 opacity-60'>
           <TableRow>
-            <TableCell>ICCID</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>IMEI</TableCell>
-            <TableCell>MSISDN</TableCell>
-            <TableCell>Rate Plan</TableCell>
-            <TableCell>Communication Plan</TableCell>
-            <TableCell>CUSTOMER</TableCell>
-            <TableCell>CTDDATAUSAGE</TableCell>
-            <TableCell>Action</TableCell>
+            <TableHead className='w-[100px]'>ICCID</TableHead>
+            <TableHead className='text-gray-300'>Status</TableHead>
+            <TableHead className='text-gray-300'>IMEI</TableHead>
+            <TableHead className='text-gray-300'>MSISDN</TableHead>
+            <TableHead className='text-gray-300'>Rate Plan</TableHead>
+            <TableHead className='text-gray-300'>Communication Plan</TableHead>
+            <TableHead className='text-gray-300'>CUSTOMER</TableHead>
+            <TableHead className='text-gray-300'>CTDDATAUSAGE</TableHead>
+            <TableHead className='text-gray-300'>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedDevices.length > 0 ? (
             paginatedDevices.map((device: JasperDevice) => (
               <TableRow key={device.iccid}>
-                <TableCell>{device.iccid}</TableCell>
+                <TableCell className='font-medium bg-muted'>
+                  {device.iccid}
+                </TableCell>
                 <TableCell>{device.status}</TableCell>
                 <TableCell>{device.imei}</TableCell>
                 <TableCell>{device.status}</TableCell>
