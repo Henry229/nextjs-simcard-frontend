@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import Pagination from './pagination';
 
 const ACCOUNT_ID = 'cmp-pp-org-4611';
 
@@ -53,18 +54,21 @@ const STATES = [
   'Barred',
 ];
 
+const ITEMS_PER_PAGE = 10;
+
 export default function KoreSimTable() {
   const { koreDevices, setKoreDevices } = useSimContext();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filteredDevices, setFilteredDevices] = useState<KoreSimTableDevice[]>(
     []
-  ); // Initialize with empty array
+  );
   const [selectedState, setSelectedState] = useState<string>('all');
   const [searchIccid, setSearchIccid] = useState('');
   const [searchResult, setSearchResult] = useState<KoreSimTableDevice | null>(
     null
   );
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchKoreDevices = useCallback(async () => {
     setLoading(true);
@@ -83,20 +87,11 @@ export default function KoreSimTable() {
   }, [fetchKoreDevices]);
 
   useEffect(() => {
-    console.log('koreDevices:', koreDevices);
-    console.log('selectedState:', selectedState);
-    console.log('searchResult:', searchResult);
-
     if (!koreDevices || !Array.isArray(koreDevices.simCards)) {
       console.error('koreDevices.simCards is not an array:', koreDevices);
       setFilteredDevices([]);
       return;
     }
-    // if (!koreDevices || !Array.isArray(koreDevices.simCards)) {
-    //   console.error('koreDevices.simCards is not an array:', koreDevices);
-    //   setFilteredDevices([]);
-    //   return;
-    // }
 
     let result = koreDevices.simCards;
     if (selectedState !== 'all') {
@@ -107,8 +102,8 @@ export default function KoreSimTable() {
     if (searchResult) {
       result = [searchResult];
     }
-    // console.log('Filtered result:', result);
     setFilteredDevices(result);
+    setCurrentPage(1);
   }, [koreDevices, selectedState, searchResult]);
 
   const handleStatusChange = async (
@@ -128,6 +123,7 @@ export default function KoreSimTable() {
     setSelectedState(value);
     setSearchResult(null);
     setSearchIccid('');
+    setCurrentPage(1);
   };
 
   const handleSearch = async () => {
@@ -140,15 +136,18 @@ export default function KoreSimTable() {
       const response = await searchKoreDeviceByIccid(searchIccid);
       if (response.simCards && response.simCards.length > 0) {
         setSearchResult(response.simCards[0]);
+        setFilteredDevices([response.simCards[0]]);
         setError(null);
       } else {
         setSearchResult(null);
+        setFilteredDevices([]);
         setError('No device found with the given ICCID');
       }
     } catch (err) {
       console.error('Error searching KORE device:', err);
       setError('Failed to search for the device');
       setSearchResult(null);
+      setFilteredDevices([]);
     } finally {
       setLoading(false);
     }
@@ -158,12 +157,18 @@ export default function KoreSimTable() {
     setSearchIccid('');
     setSearchResult(null);
     setError(null);
+    setFilteredDevices(koreDevices?.simCards || []);
+    setCurrentPage(1);
   };
+
+  const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
+  const paginatedDevices = filteredDevices.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (loading) return <div>Loading KORE devices...</div>;
   if (error) return <div>Error: {error}</div>;
-
-  // console.log('filteredDevices before rendering:', filteredDevices);
 
   return (
     <div>
@@ -206,8 +211,8 @@ export default function KoreSimTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.isArray(filteredDevices) && filteredDevices.length > 0 ? (
-            filteredDevices.map((device: KoreSimTableDevice) => (
+          {paginatedDevices.length > 0 ? (
+            paginatedDevices.map((device: KoreSimTableDevice) => (
               <TableRow key={device.subscription_id}>
                 <TableCell>{device.iccid}</TableCell>
                 <TableCell>{device.subscription_id}</TableCell>
@@ -239,11 +244,16 @@ export default function KoreSimTable() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4}>No devices found</TableCell>
+              <TableCell colSpan={7}>No devices found</TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

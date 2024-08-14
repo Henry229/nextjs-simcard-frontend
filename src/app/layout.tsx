@@ -6,6 +6,7 @@ import ClientLayout from '@/components/clientLayout';
 import { Metadata } from 'next';
 import { SimProvider } from './contexts/simContext';
 import AuthProvider from '@/components/authProvider';
+import { ThemeProvider } from './contexts/theme-provider';
 
 const openSans = Open_Sans({ subsets: ['latin'] });
 
@@ -22,12 +23,14 @@ export default function RootLayout({
   return (
     <html lang='en' className={openSans.className}>
       <body suppressHydrationWarning={true}>
-        <AuthProvider>
-          <SimProvider>
-            <Navbar />
-            <ClientLayout>{children}</ClientLayout>
-          </SimProvider>
-        </AuthProvider>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+          <AuthProvider>
+            <SimProvider>
+              <Navbar />
+              <ClientLayout>{children}</ClientLayout>
+            </SimProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

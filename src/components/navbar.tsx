@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from './theme-toggle';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -87,6 +88,7 @@ export default function Navbar() {
             <Button onClick={openSignUpModal}>Sign Up</Button>
           </>
         )}
+        <ThemeToggle />
       </div>
       <Modal
         isOpen={isLoginModalOpen}

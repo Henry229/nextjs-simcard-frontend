@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import Pagination from './pagination';
 
 interface JasperDevice {
   iccid: string;
@@ -52,6 +53,8 @@ const STATUS = [
   'TEST_READY',
 ];
 
+const ITEMS_PER_PAGE = 10;
+
 export default function DeviceTable() {
   const [jasperDevices, setJasperDevices] = useState<JasperDevice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +63,7 @@ export default function DeviceTable() {
   const [searchIccid, setSearchIccid] = useState('');
   const [searchResult, setSearchResult] = useState<JasperDevice | null>(null);
   const [selectedState, setSelectedState] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchDevices();
@@ -73,14 +77,13 @@ export default function DeviceTable() {
     if (searchResult) {
       result = [searchResult];
     }
-    console.log('++++ Filtered Devices:', result);
     setFilteredDevices(result);
+    setCurrentPage(1);
   }, [jasperDevices, selectedState, searchResult]);
 
   const fetchDevices = async () => {
     try {
       const fetchedDevices = await getAllJasper();
-      console.log('++++ Jasper Devices:', fetchedDevices);
       if (Array.isArray(fetchedDevices.simCards)) {
         setJasperDevices(fetchedDevices.simCards);
         setFilteredDevices(fetchedDevices.simCards);
@@ -102,8 +105,7 @@ export default function DeviceTable() {
   ) => {
     try {
       const statusData = await changeJasperStatus(iccid, newStatus);
-      // await axios.put(`/api/devices/${iccid}/status`, { status: newStatus });
-      fetchDevices(); // 상태 변경 후 디바이스 목록 새로고침
+      fetchDevices();
     } catch (err) {
       console.error('Error changing device status in deviceTable:', err);
       setError('Error changing device status in deviceTable');
@@ -114,6 +116,7 @@ export default function DeviceTable() {
     setSelectedState(value);
     setSearchResult(null);
     setSearchIccid('');
+    setCurrentPage(1);
   };
 
   const handleSearch = async () => {
@@ -151,7 +154,14 @@ export default function DeviceTable() {
     setSearchResult(null);
     setError(null);
     setFilteredDevices(jasperDevices);
+    setCurrentPage(1);
   };
+
+  const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
+  const paginatedDevices = filteredDevices.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -197,8 +207,8 @@ export default function DeviceTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Array.isArray(filteredDevices) && filteredDevices.length > 0 ? (
-            filteredDevices.map((device: JasperDevice) => (
+          {paginatedDevices.length > 0 ? (
+            paginatedDevices.map((device: JasperDevice) => (
               <TableRow key={device.iccid}>
                 <TableCell>{device.iccid}</TableCell>
                 <TableCell>{device.status}</TableCell>
@@ -228,11 +238,16 @@ export default function DeviceTable() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6}>No devices found</TableCell>
+              <TableCell colSpan={9}>No devices found</TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }
