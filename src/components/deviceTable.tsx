@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Pagination from './pagination';
+import { IoIosFlash } from 'react-icons/io';
+import { IoIosFlashOff } from 'react-icons/io';
 
 interface JasperDevice {
   iccid: string;
@@ -214,8 +216,18 @@ export default function DeviceTable() {
                 <TableCell>{device.status}</TableCell>
                 <TableCell>{device.imei}</TableCell>
                 <TableCell>{device.status}</TableCell>
-                <TableCell>{device.ratePlan}</TableCell>
-                <TableCell>{device.communicationPlan}</TableCell>
+                <TableCell
+                  className='max-w-[100px] truncate'
+                  title={device.ratePlan || ''}
+                >
+                  {device.ratePlan}
+                </TableCell>
+                <TableCell
+                  className='max-w-[100px] truncate'
+                  title={device.communicationPlan || ''}
+                >
+                  {device.communicationPlan}
+                </TableCell>
                 <TableCell>{device.customer}</TableCell>
                 <TableCell>{device.ctdDataUsage}</TableCell>
                 <TableCell>
@@ -224,14 +236,14 @@ export default function DeviceTable() {
                     onClick={() => changeStatus(device.iccid, 'ACTIVATED')}
                     disabled={device.status === 'ACTIVATED'}
                   >
-                    Activate
+                    <IoIosFlash />
                   </Button>
                   <Button
                     className='bg-rose-600 text-white hover:bg-rose-900'
                     onClick={() => changeStatus(device.iccid, 'DEACTIVATED')}
                     disabled={device.status === 'DEACTIVATED'}
                   >
-                    Deactivate
+                    <IoIosFlashOff />
                   </Button>
                 </TableCell>
               </TableRow>

@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Pagination from './pagination';
+import { IoIosFlash } from 'react-icons/io';
+import { IoIosFlashOff } from 'react-icons/io';
 
 const ACCOUNT_ID = 'cmp-pp-org-4611';
 
@@ -228,7 +230,7 @@ export default function KoreSimTable() {
                     }
                     disabled={device.state === 'Active'}
                   >
-                    Activate
+                    <IoIosFlash />
                   </Button>
                   <Button
                     className='bg-rose-600 text-white hover:bg-rose-900'
@@ -237,7 +239,7 @@ export default function KoreSimTable() {
                     }
                     disabled={device.state === 'Deactivated'}
                   >
-                    Deactivate
+                    <IoIosFlashOff />
                   </Button>
                 </TableCell>
               </TableRow>
