@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -7,7 +5,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ForgotPasswordModal from './forgotPasswordModal';
-import { useTheme } from 'next-themes';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -22,7 +19,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -34,22 +30,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
-  // if (session) {
-  //   router.replace('/dashboard');
-  //   return null;
-  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    console.log('>>>> Email:', email);
-    console.log('>>>> password:', password);
     try {
       const res = await signIn('credentials', {
         email,
         password,
         redirect: false,
-        // callbackUrl: '/dashboard',
       });
       if (res?.error) {
         setError(res.error);
@@ -79,20 +68,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
   }
 
   return (
-    <div
-      className={`w-full max-w-md bg-white p-8 rounded-lg ${
-        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'
-      } shadow-md`}
-    >
+    <div className='w-full max-w-md'>
       <h2 className='text-2xl font-bold mb-6 text-center'>
         Sign in to your account
       </h2>
       <form onSubmit={handleSubmit} className='space-y-4'>
         <div>
-          <label
-            htmlFor='email'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
+          <label htmlFor='email' className='block text-sm font-medium mb-2'>
             Email address
           </label>
           <Input
@@ -104,10 +86,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
           />
         </div>
         <div>
-          <label
-            htmlFor='password'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
+          <label htmlFor='password' className='block text-sm font-medium mb-2'>
             Password
           </label>
           <Input
@@ -126,12 +105,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
               type='checkbox'
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
+              className='h-4 w-4 text-primary focus:ring-primary border-input rounded'
             />
-            <label
-              htmlFor='remember-me'
-              className='ml-2 block text-sm text-gray-900'
-            >
+            <label htmlFor='remember-me' className='ml-2 block text-sm'>
               Remember me
             </label>
           </div>
@@ -139,7 +115,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
             <a
               href='#'
               onClick={handleForgotPasswordClick}
-              className='font-medium text-indigo-600 hover:text-indigo-500'
+              className='font-medium text-primary hover:text-primary/80'
             >
               Forgot your password?
             </a>
@@ -149,13 +125,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
           Sign in
         </Button>
       </form>
-      {error && <p className='mt-2 text-sm text-red-600'>{error}</p>}
-      <p className='mt-4 text-center text-sm text-gray-600'>
+      {error && <p className='mt-2 text-sm text-destructive'>{error}</p>}
+      <p className='mt-4 text-center text-sm text-muted-foreground'>
         Don&apos;t have an account?{' '}
         <Link
           href='/signup'
           onClick={handleSignUpLinkClick}
-          className='font-medium text-indigo-600 hover:text-indigo-500'
+          className='font-medium text-primary hover:text-primary/80'
         >
           Sign up
         </Link>

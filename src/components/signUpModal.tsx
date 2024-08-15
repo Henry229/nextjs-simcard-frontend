@@ -47,16 +47,13 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
   };
 
   return (
-    <div className='w-full max-w-md bg-white p-8 rounded-lg shadow-md'>
+    <div className='w-full max-w-md'>
       <h2 className='text-2xl font-bold mb-6 text-center'>
         Create a new account
       </h2>
       <form onSubmit={handleSubmit} className='space-y-4'>
         <div>
-          <label
-            htmlFor='name'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
+          <label htmlFor='name' className='block text-sm font-medium mb-2'>
             Name
           </label>
           <Input
@@ -68,10 +65,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
           />
         </div>
         <div>
-          <label
-            htmlFor='email'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
+          <label htmlFor='email' className='block text-sm font-medium mb-2'>
             Email address
           </label>
           <Input
@@ -83,10 +77,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose, onLoginClick }) => {
           />
         </div>
         <div>
-          <label
-            htmlFor='password'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
+          <label htmlFor='password' className='block text-sm font-medium mb-2'>
             Password
           </label>
           <Input
