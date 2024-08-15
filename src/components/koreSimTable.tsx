@@ -201,7 +201,7 @@ export default function KoreSimTable() {
       </Select>
 
       <Table>
-        <TableHeader>
+        <TableHeader className='bg-gray-800 opacity-60'>
           <TableRow>
             <TableHead>ICCID</TableHead>
             <TableHead>Subscription ID</TableHead>
@@ -216,15 +216,20 @@ export default function KoreSimTable() {
           {paginatedDevices.length > 0 ? (
             paginatedDevices.map((device: KoreSimTableDevice) => (
               <TableRow key={device.subscription_id}>
-                <TableCell>{device.iccid}</TableCell>
+                <TableCell className='bg-muted'>{device.iccid}</TableCell>
                 <TableCell>{device.subscription_id}</TableCell>
                 <TableCell>{device.state}</TableCell>
                 <TableCell>{device.msisdn}</TableCell>
                 <TableCell>{device.imsi}</TableCell>
-                <TableCell>{device.data_usage}</TableCell>
+                <TableCell>
+                  {device.data_usage
+                    ? (device.data_usage / 1000000).toFixed(2)
+                    : 0}{' '}
+                  M
+                </TableCell>
                 <TableCell>
                   <Button
-                    className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
+                    className='bg-indigo-800 text-white hover:bg-indigo-950 p-0.5 mr-1 h-6 w-6'
                     onClick={() =>
                       handleStatusChange(device.subscription_id, 'active')
                     }
@@ -233,7 +238,7 @@ export default function KoreSimTable() {
                     <IoIosFlash />
                   </Button>
                   <Button
-                    className='bg-rose-600 text-white hover:bg-rose-900'
+                    className='bg-rose-600 text-white hover:bg-rose-900 p-0.5 mr-1 h-6 w-6'
                     onClick={() =>
                       handleStatusChange(device.subscription_id, 'deactivated')
                     }

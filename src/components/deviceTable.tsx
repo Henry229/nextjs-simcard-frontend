@@ -231,17 +231,22 @@ export default function DeviceTable() {
                   {device.communicationPlan}
                 </TableCell>
                 <TableCell>{device.customer}</TableCell>
-                <TableCell>{device.ctdDataUsage}</TableCell>
+                <TableCell>
+                  {device.ctdDataUsage
+                    ? (device.ctdDataUsage / 1000000).toFixed(2)
+                    : 0}{' '}
+                  M
+                </TableCell>
                 <TableCell>
                   <Button
-                    className='bg-indigo-800 text-white hover:bg-indigo-950 mr-2'
+                    className='bg-indigo-800 text-white hover:bg-indigo-950 p-0.5 mr-1 h-6 w-6'
                     onClick={() => changeStatus(device.iccid, 'ACTIVATED')}
                     disabled={device.status === 'ACTIVATED'}
                   >
                     <IoIosFlash />
                   </Button>
                   <Button
-                    className='bg-rose-600 text-white hover:bg-rose-900'
+                    className='bg-rose-600 text-white hover:bg-rose-900 p-0.5 mr-1 h-6 w-6'
                     onClick={() => changeStatus(device.iccid, 'DEACTIVATED')}
                     disabled={device.status === 'DEACTIVATED'}
                   >
