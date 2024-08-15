@@ -1,17 +1,18 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-// import axios from 'axios';
 import type { NextAuthOptions } from 'next-auth';
 import { signIn } from '@/app/api/authApi';
 
-// 사용자 정의 User 타입 선언
 declare module 'next-auth' {
   interface User {
     id: string;
+    email: string;
+    name: string;
+    roleId: number;
   }
   interface Session {
     user: User & {
-      id: string;
+      role: string;
     };
   }
 }
@@ -34,9 +35,19 @@ export const authOptions: NextAuthOptions = {
           // return null;
         }
         try {
-          const user = await signIn(credentials.email, credentials.password);
-          console.log('@@@@ User:', user);
-          return user;
+          const response = await signIn(
+            credentials.email,
+            credentials.password
+          );
+          if (response && response.token) {
+            const { token } = response;
+            return {
+              id: token.id,
+              email: token.email,
+              name: token.name,
+              roleId: token.roleId,
+            };
+          }
           // const res = await axios.post(
           //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/signin`,
           //   {
@@ -45,6 +56,7 @@ export const authOptions: NextAuthOptions = {
           //   }
           // );
           // return res.data;
+          return null;
         } catch (error) {
           // if (axios.isAxiosError(error)) {
           //   throw new Error(
@@ -52,31 +64,40 @@ export const authOptions: NextAuthOptions = {
           //   );
           // }
           // throw error;
-          throw new Error(
-            'Authentication failed : Eamil or password is incorrect'
-          );
+          // throw new Error(
+          // 'Authentication failed : Eamil or password is incorrect'
+
+          // );
+          console.error('Authentication error:', error);
+          return null;
         }
       },
     }),
   ],
-  // debug: true, // 디버그 모드 활성화
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.roleId = user.roleId;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token) {
         session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.roleId = token.roleId as number;
+        session.user.role = token.roleId === 1 ? 'admin' : 'readonly';
       }
       return session;
     },
   },
   pages: {
     signIn: '/login',
-    error: '/auth/error', // 커스텀 에러
+    error: '/auth/error',
   },
 };
 

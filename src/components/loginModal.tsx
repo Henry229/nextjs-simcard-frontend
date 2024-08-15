@@ -39,6 +39,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSignUpClick }) => {
         email,
         password,
         redirect: false,
+        // callbackUrl: '/dashboard',
       });
       if (res?.error) {
         setError(res.error);

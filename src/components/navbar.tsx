@@ -16,14 +16,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from './theme-toggle';
-import { useTheme } from 'next-themes';
-import { Users } from 'lucide-react';
+// import { useTheme } from 'next-themes';
+import { BiEdit } from 'react-icons/bi';
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true);
@@ -39,6 +39,9 @@ export default function Navbar() {
     await signOut({ callbackUrl: '/' });
   };
   const isAdmin = session?.user?.role === 'admin';
+  console.log('>>>> session', session);
+  console.log('>>>> session.user.email', session?.user.email);
+  console.log('>>>> isAdmin', isAdmin);
 
   return (
     <nav className='flex items-center justify-between p-4 bg-background text-foreground shadow-md'>
@@ -55,9 +58,19 @@ export default function Navbar() {
         </Link>
       </div>
       <div className='flex items-center space-x-2'>
-        {/* <div className='space-x-2'> */}
         {session ? (
           <div className='flex items-center space-x-4'>
+            {isAdmin && (
+              <Button
+                variant='ghost'
+                onClick={() => {
+                  /* TODO: Implement user edit functionality */
+                }}
+                className='p-2'
+              >
+                <BiEdit className='h-5 w-5' />
+              </Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
