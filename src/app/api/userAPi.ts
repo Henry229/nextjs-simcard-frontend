@@ -12,4 +12,25 @@ export const getAllUsers = async () => {
   }
 };
 
+export const updateUser = async (id: number, userData: any) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/api/users/${id}`,
+      userData
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (id: number) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/api/users/${id}`);
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
 // Add more user-related API calls here as needed
